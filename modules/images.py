@@ -539,6 +539,9 @@ def save_image(image, path, basename, seed=None, prompt=None, extension='png', i
     script_callbacks.before_image_saved_callback(params)
 
     image = params.image
+
+    #nsfw_detect_blur(image)
+
     fullfn = params.filename
     info = params.pnginfo.get(pnginfo_section_name, None)
 
