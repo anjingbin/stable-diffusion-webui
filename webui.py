@@ -41,6 +41,7 @@ from modules import shared, devices, sd_samplers, upscaler, extensions, localiza
 import modules.codeformer_model as codeformer
 import modules.face_restoration
 import modules.gfpgan_model as gfpgan
+import modules.nsfw_model as nsfw
 import modules.img2img
 
 import modules.lowvram
@@ -119,6 +120,9 @@ def initialize():
 
     gfpgan.setup_model(cmd_opts.gfpgan_models_path)
     startup_timer.record("setup gfpgan")
+
+    nsfw.nsfw()
+    startup_timer.record("load nsfw detector")
 
     modelloader.list_builtin_upscalers()
     startup_timer.record("list builtin upscalers")
