@@ -89,26 +89,6 @@ def img2img(id_task: str, mode: int, prompt: str, negative_prompt: str, prompt_s
     if mode == 0:  # img2img
         image = init_img.convert("RGB")
         mask = None
-    elif mode == 1:  # img2img sketch
-        image = sketch.convert("RGB")
-        mask = None
-    elif mode == 2:  # inpaint
-        image, mask = init_img_with_mask["image"], init_img_with_mask["mask"]
-        alpha_mask = ImageOps.invert(image.split()[-1]).convert('L').point(lambda x: 255 if x > 0 else 0, mode='1')
-        mask = ImageChops.lighter(alpha_mask, mask.convert('L')).convert('L')
-        image = image.convert("RGB")
-    elif mode == 3:  # inpaint sketch
-        image = inpaint_color_sketch
-        orig = inpaint_color_sketch_orig or inpaint_color_sketch
-        pred = np.any(np.array(image) != np.array(orig), axis=-1)
-        mask = Image.fromarray(pred.astype(np.uint8) * 255, "L")
-        mask = ImageEnhance.Brightness(mask).enhance(1 - mask_alpha / 100)
-        blur = ImageFilter.GaussianBlur(mask_blur)
-        image = Image.composite(image.filter(blur), orig, mask.filter(blur))
-        image = image.convert("RGB")
-    elif mode == 4:  # inpaint upload mask
-        image = init_img_inpaint
-        mask = init_mask_inpaint
     else:
         image = None
         mask = None
@@ -143,15 +123,9 @@ def img2img(id_task: str, mode: int, prompt: str, negative_prompt: str, prompt_s
         tiling=tiling,
         init_images=[image],
         mask=mask,
-        mask_blur=mask_blur,
-        inpainting_fill=inpainting_fill,
         resize_mode=resize_mode,
         denoising_strength=denoising_strength,
         image_cfg_scale=image_cfg_scale,
-        inpaint_full_res=inpaint_full_res,
-        inpaint_full_res_padding=inpaint_full_res_padding,
-        inpainting_mask_invert=inpainting_mask_invert,
-        override_settings=override_settings,
     )
 
     p.scripts = modules.scripts.scripts_txt2img
@@ -160,19 +134,9 @@ def img2img(id_task: str, mode: int, prompt: str, negative_prompt: str, prompt_s
     if shared.cmd_opts.enable_console_prompts:
         print(f"\nimg2img: {prompt}", file=shared.progress_print_out)
 
-    if mask:
-        p.extra_generation_params["Mask blur"] = mask_blur
-
-    if is_batch:
-        assert not shared.cmd_opts.hide_ui_dir_config, "Launched with --hide-ui-dir-config, batch img2img disabled"
-
-        process_batch(p, img2img_batch_input_dir, img2img_batch_output_dir, img2img_batch_inpaint_mask_dir, args)
-
-        processed = Processed(p, [], p.seed, "")
-    else:
-        processed = modules.scripts.scripts_img2img.run(p, *args)
-        if processed is None:
-            processed = process_images(p)
+    processed = modules.scripts.scripts_img2img.run(p, *args)
+    if processed is None:
+        processed = process_images(p)
 
     p.close()
 
