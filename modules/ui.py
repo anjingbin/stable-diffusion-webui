@@ -1476,6 +1476,9 @@ def create_ui():
             queue=False,
         )
 
+        print("dump.dependencies")
+        print(demo.dependencies)
+
         def modelmerger(*args):
             try:
                 results = modules.extras.run_modelmerger(*args)
