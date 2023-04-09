@@ -699,15 +699,6 @@ def create_ui():
                                 batch_count = gr.Slider(minimum=1, step=1, label='Batch count', value=1, elem_id="img2img_batch_count")
                                 batch_size = gr.Slider(minimum=1, maximum=8, step=1, label='Batch size', value=1, elem_id="img2img_batch_size")
 
-                    elif category == "override_settings":
-                        with FormRow(elem_id="img2img_override_settings_row") as row:
-                            override_settings = create_override_settings_dropdown('img2img', row)
-
-                    elif category == "scripts":
-                        with FormGroup(elem_id="img2img_script_container"):
-                            custom_inputs = modules.scripts.scripts_img2img.setup_ui()
-
-
             img2img_gallery, generation_info, html_info, html_log = create_output_panel("img2img", opts.outdir_img2img_samples)
 
             connect_reuse_seed(seed, reuse_seed, generation_info, dummy_component, is_subseed=False)
