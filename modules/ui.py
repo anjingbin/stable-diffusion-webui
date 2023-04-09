@@ -208,6 +208,7 @@ def connect_clear_prompt(button):
     """Given clear button, prompt, and token_counter objects, setup clear prompt button click event"""
     button.click(
         _js="clear_prompt",
+        api_name="clear_prompt",
         fn=None,
         inputs=[],
         outputs=[],
