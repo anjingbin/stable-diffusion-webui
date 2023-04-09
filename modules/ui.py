@@ -1477,7 +1477,8 @@ def create_ui():
         )
 
         print("dump.dependencies")
-        print(demo.dependencies)
+        for i, element in enumerate(demo.dependencies):
+            print("Index {}: {}".format(i, element))
 
         def modelmerger(*args):
             try:
