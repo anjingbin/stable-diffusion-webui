@@ -208,7 +208,6 @@ def connect_clear_prompt(button):
     """Given clear button, prompt, and token_counter objects, setup clear prompt button click event"""
     button.click(
         _js="clear_prompt",
-        api_name="clear_prompt",
         fn=None,
         inputs=[],
         outputs=[],
@@ -719,6 +718,7 @@ def create_ui():
             img2img_args = dict(
                 fn=wrap_gradio_gpu_call(modules.img2img.img2img, extra_outputs=[None, '', '']),
                 _js="submit_img2img",
+                api_name="img2img",
                 inputs=[
                     dummy_component,
                     dummy_component,
