@@ -33,6 +33,7 @@ def create_ui():
 
     submit.click(
         fn=call_queue.wrap_gradio_gpu_call(postprocessing.run_postprocessing, extra_outputs=[None, '']),
+        api_name="upscale",
         inputs=[
             tab_index,
             extras_image,
