@@ -534,6 +534,7 @@ def create_ui():
             txt2img_args = dict(
                 fn=wrap_gradio_gpu_call(modules.txt2img.txt2img, extra_outputs=[None, '', '']),
                 _js="submit",
+                api_name="txt2img",
                 inputs=[
                     dummy_component,
                     txt2img_prompt,
