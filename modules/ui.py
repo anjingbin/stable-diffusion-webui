@@ -1477,7 +1477,11 @@ def create_ui():
             queue=False,
         )
 
-        print("dump.dependencies")
+        print("demo.fns")
+        for i, element in enumerate(demo.fns):
+            print("Index {}: {}".format(i, element))
+
+        print("demo.dependencies")
         for i, element in enumerate(demo.dependencies):
             print("Index {}: {}".format(i, element))
 
