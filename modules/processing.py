@@ -707,8 +707,9 @@ def process_images_inner(p: StableDiffusionProcessing) -> Processed:
                 output_images.append(image)
 
                 if opts.samples_save and not p.do_not_save_samples and opts.samples_format.lower() == 'png':
-                    images.save_image(image, p.outpath_samples, "", seeds[i], prompts[i], "jpg", info=infotext(n, i), p=p)
-                    output_images.append(image)
+                    downscaled = image.copy()
+                    images.save_image(downscaled, p.outpath_samples, "", seeds[i], prompts[i], "jpg", info=infotext(n, i), p=p)
+                    output_images.append(downscaled)
 
                 if hasattr(p, 'mask_for_overlay') and p.mask_for_overlay:
                     image_mask = p.mask_for_overlay.convert('RGB')
