@@ -289,3 +289,7 @@ class MemoryResponse(BaseModel):
 class ScriptsList(BaseModel):
     txt2img: list = Field(default=None,title="Txt2img", description="Titles of scripts (txt2img)")
     img2img: list = Field(default=None,title="Img2img", description="Titles of scripts (img2img)")
+
+class AliyunCallbackRequest(BaseModel):
+    checksum: str = Field(default= "", title="checksum", description="checksum SHA256")
+    content: str = Field(default= "",title="content", description="detection result")

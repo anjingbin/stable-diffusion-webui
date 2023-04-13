@@ -21,7 +21,9 @@ import hashlib
 from modules import sd_samplers, shared, script_callbacks, errors
 from modules.shared import opts, cmd_opts
 
-from modules.nsfw_model import nsfw_detect_blur
+#from modules.nsfw_model import nsfw_detect_blur
+from modules.nsfw_aliyun import nsfw_detect_blur
+
 
 LANCZOS = (Image.Resampling.LANCZOS if hasattr(Image, 'Resampling') else Image.LANCZOS)
 
