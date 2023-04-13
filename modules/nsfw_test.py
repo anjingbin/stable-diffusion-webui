@@ -1,3 +1,4 @@
+import os
 from aliyunsdkcore import client
 from aliyunsdkgreen.request.v20180509 import ImageSyncScanRequest,ImageAsyncScanRequest
 from aliyunsdkcore.profile import region_provider
@@ -7,10 +8,11 @@ from aliyunsdkgreenextension.request.extension import HttpContentHelper
 import json
 import uuid
 
-clt = client.AcsClient("LTAI5tKiMkrggjeEccezSE5a", "sW3p61ClU9McEtxgIScKiCvrIZZX36","cn-beijing")
-region_provider.modify_point('Green', 'cn-beijing', 'green.cn-beijing.aliyuncs.com')
+key_id = os.environ.get('GREEN_API_KEY_ID')
+key_secret = os.environ.get('GREEN_API_KEY_SECRET')
 
-AccessKeyId = "LTAI5tKiMkrggjeEccezSE5a"
+clt = client.AcsClient(key_id, key_secret,"cn-beijing")
+region_provider.modify_point('Green', 'cn-beijing', 'green.cn-beijing.aliyuncs.com')
 
 def nsfw_detect(image_path):
 

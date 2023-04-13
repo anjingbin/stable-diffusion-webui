@@ -11,10 +11,12 @@ import uuid
 
 from modules import paths
 
-clt = client.AcsClient("LTAI5tKiMkrggjeEccezSE5a", "sW3p61ClU9McEtxgIScKiCvrIZZX36","cn-beijing")
+key_id = os.environ.get('GREEN_API_KEY_ID')
+key_secret = os.environ.get('GREEN_API_KEY_SECRET')
+
+clt = client.AcsClient(key_id, key_secret,"cn-beijing")
 region_provider.modify_point('Green', 'cn-beijing', 'green.cn-beijing.aliyuncs.com')
 
-AccessKeyId = "LTAI5tKiMkrggjeEccezSE5a"
 watermark_image= "nsfw-wm.png"
 
 model_dir = "nsfw"
