@@ -21,10 +21,6 @@ import hashlib
 from modules import sd_samplers, shared, script_callbacks, errors
 from modules.shared import opts, cmd_opts
 
-#from modules.nsfw_model import nsfw_detect_blur
-from modules.nsfw_aliyun import nsfw_detect_blur
-
-
 LANCZOS = (Image.Resampling.LANCZOS if hasattr(Image, 'Resampling') else Image.LANCZOS)
 
 
@@ -591,7 +587,6 @@ def save_image(image, path, basename, seed=None, prompt=None, extension='png', i
     _atomically_save_image(image, fullfn_without_extension, extension)
 
     image.already_saved_as = fullfn
-    nsfw_detect_blur(fullfn)
 
     oversize = image.width > opts.target_side_length or image.height > opts.target_side_length
     if opts.export_for_4chan and (oversize or os.stat(fullfn).st_size > opts.img_downscale_threshold * 1024 * 1024):

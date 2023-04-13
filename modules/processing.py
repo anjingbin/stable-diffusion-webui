@@ -30,6 +30,8 @@ from ldm.models.diffusion.ddpm import LatentDepth2ImageDiffusion
 from einops import repeat, rearrange
 from blendmodes.blend import blendLayers, BlendType
 
+from modules.nsfw_aliyun import nsfw_upload_detect, nsfw_blur
+
 # some of those options should not be changed at all because they would break the model, so I removed them from options.
 opt_C = 4
 opt_f = 8
@@ -697,19 +699,25 @@ def process_images_inner(p: StableDiffusionProcessing) -> Processed:
 
                 image = apply_overlay(image, p.paste_to, i, p.overlay_images)
 
+                block = False;
+                if opts.samples_save and not p.do_not_save_samples and opts.samples_format.lower() == 'png':
+                    downscaled = image.copy()
+                    fullfn, txt_fullfn = images.save_image(downscaled, p.outpath_samples, "", seeds[i], prompts[i], "jpg", info=infotext(n, i), p=p)
+                    if nsfw_upload_detect(fullfn):
+                        block = True
+                        nsfw_blur(fullfn)
+                    output_images.append(downscaled)
+
                 if opts.samples_save and not p.do_not_save_samples:
-                    images.save_image(image, p.outpath_samples, "", seeds[i], prompts[i], opts.samples_format, info=infotext(n, i), p=p)
+                    fullfn, txt_fullfn = images.save_image(image, p.outpath_samples, "", seeds[i], prompts[i], opts.samples_format, info=infotext(n, i), p=p)
+                    if block:
+                        nsfw_blur(fullfn)
 
                 text = infotext(n, i)
                 infotexts.append(text)
                 if opts.enable_pnginfo:
                     image.info["parameters"] = text
                 output_images.append(image)
-
-                if opts.samples_save and not p.do_not_save_samples and opts.samples_format.lower() == 'png':
-                    downscaled = image.copy()
-                    images.save_image(downscaled, p.outpath_samples, "", seeds[i], prompts[i], "jpg", info=infotext(n, i), p=p)
-                    output_images.append(downscaled)
 
                 if hasattr(p, 'mask_for_overlay') and p.mask_for_overlay:
                     image_mask = p.mask_for_overlay.convert('RGB')
