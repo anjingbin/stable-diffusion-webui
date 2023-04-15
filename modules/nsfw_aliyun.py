@@ -51,11 +51,10 @@ def nsfw_detect(image_path):
                 for sceneResult in sceneResults:
                     scene = sceneResult["scene"]
                     suggestion = sceneResult["suggestion"]
-                    # 根据scene和suggestion设置后续操作。
-                    # 根据不同的suggestion结果做业务上的不同处理。例如，将违规数据删除等。
+                    label = sceneResult["label"]
+                    print(label)
                     print(suggestion)
-                    print(scene)
-                    if suggestion == "block":
+                    if suggestion == "block" and label== "porn" :
                         return True
     return False
                 
@@ -92,9 +91,10 @@ def nsfw_upload_detect(image_path):
                 for sceneResult in sceneResults:
                     scene = sceneResult["scene"]
                     suggestion = sceneResult["suggestion"]
+                    label = sceneResult["label"]
+                    print(label)
                     print(suggestion)
-                    print(scene)
-                    if suggestion == "block":
+                    if suggestion == "block" and label == "porn":
                         return True
     return False
                 
