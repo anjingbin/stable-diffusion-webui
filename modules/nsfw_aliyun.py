@@ -55,7 +55,7 @@ def nsfw_detect(image_path):
                     label = sceneResult["label"]
                     print(label)
                     print(suggestion)
-                    if suggestion == "block" and label== "porn" :
+                    if suggestion == "block": # and label== "porn" :
                         return True
     return False
                 
@@ -95,7 +95,7 @@ def nsfw_upload_detect(image_path):
                     label = sceneResult["label"]
                     print(label)
                     print(suggestion)
-                    if suggestion == "block" and label == "porn":
+                    if suggestion == "block": # and label == "porn":
                         return True
     return False
                 
@@ -174,21 +174,23 @@ def nsfw_blur_new(src_image_path):
     watermark_image = Image.open(watermark_image_path)
     if src_image is None or watermark_image is None:
         print('Failed to open the source or watermark image')
-        return;
-
+        return
+    
+    src_image = src_image.filter(ImageFilter.GaussianBlur(radius = 30))
     # Calculate the watermark dimensions based on the source image's size and aspect ratio
     src_width, src_height = src_image.size
     watermark_width, watermark_height = watermark_image.size
-    aspect_ratio = watermark_width / watermark_height
 
     # Resize the watermark image to fit the source image
     if src_height < src_width:
-        new_watermark_height = src_height/6
-        new_watermark_width = int(new_watermark_height * aspect_ratio)
+        new_watermark_height = int(src_height/6)
+        new_watermark_width = int(new_watermark_height * (watermark_width/watermark_height))
+        print(new_watermark_width, new_watermark_height)
         watermark_image = watermark_image.resize((new_watermark_width, new_watermark_height))
     else:
-        new_watermark_width = src_width/3
-        new_watermark_height = int(new_watermark_width * aspect_ratio)
+        new_watermark_width = int(src_width/3)
+        new_watermark_height = int(new_watermark_width * (watermark_height/watermark_width))
+        print(new_watermark_width, new_watermark_height)
         watermark_image = watermark_image.resize((new_watermark_width, new_watermark_height))
 
     # Calculate the position for the watermark image to be centered in the source image
@@ -198,8 +200,9 @@ def nsfw_blur_new(src_image_path):
     bottom = top + new_watermark_height
 
     # Blend the source and watermark images
-    src_image = Image.blend(src_image, watermark_image, alpha=0.5)
+    #src_image = Image.blend(src_image, watermark_image, alpha=0.5)
+    src_image.paste(watermark_image, (left, top, right, bottom), watermark_image)
 
     # Save the blended image to disk with the same format as the original image
-    image_extension = os.path.splitext(src_image_path)[1]
-    src_image.save(src_image_path, image_extension)
+    #image_extension = os.path.splitext(src_image_path)[1]
+    src_image.save(src_image_path)
