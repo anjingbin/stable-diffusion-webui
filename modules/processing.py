@@ -30,7 +30,7 @@ from ldm.models.diffusion.ddpm import LatentDepth2ImageDiffusion
 from einops import repeat, rearrange
 from blendmodes.blend import blendLayers, BlendType
 
-from modules.nsfw_aliyun import nsfw_upload_detect, nsfw_blur
+from modules.nsfw_aliyun import nsfw_upload_detect, nsfw_blur, nsfw_blur_new
 
 # some of those options should not be changed at all because they would break the model, so I removed them from options.
 opt_C = 4
@@ -705,13 +705,13 @@ def process_images_inner(p: StableDiffusionProcessing) -> Processed:
                     fullfn, txt_fullfn = images.save_image(downscaled, p.outpath_samples, "", seeds[i], prompts[i], "jpg", info=infotext(n, i), p=p)
                     if nsfw_upload_detect(fullfn):
                         block = True
-                        nsfw_blur(fullfn)
+                        nsfw_blur_new(fullfn)
                     output_images.append(downscaled)
 
                 if opts.samples_save and not p.do_not_save_samples:
                     fullfn, txt_fullfn = images.save_image(image, p.outpath_samples, "", seeds[i], prompts[i], opts.samples_format, info=infotext(n, i), p=p)
                     if block:
-                        nsfw_blur(fullfn)
+                        nsfw_blur_new(fullfn)
 
                 text = infotext(n, i)
                 infotexts.append(text)

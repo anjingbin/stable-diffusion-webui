@@ -1,4 +1,5 @@
 import os
+from PIL import Image, ImageFilter
 import cv2
 from aliyunsdkcore import client
 from aliyunsdkgreen.request.v20180509 import ImageSyncScanRequest,ImageAsyncScanRequest
@@ -165,3 +166,40 @@ def nsfw_blur(image_path):
 
     cv2.imwrite(image_path,dst)
 
+def nsfw_blur_new(src_image_path):
+    print('blur image file:', src_image_path)
+    
+    # Open the source and watermark images
+    src_image = Image.open(src_image_path)
+    watermark_image = Image.open(watermark_image_path)
+    if src_image is None or watermark_image is None:
+        print('Failed to open the source or watermark image')
+        return;
+
+    # Calculate the watermark dimensions based on the source image's size and aspect ratio
+    src_width, src_height = src_image.size
+    watermark_width, watermark_height = watermark_image.size
+    aspect_ratio = watermark_width / watermark_height
+
+    # Resize the watermark image to fit the source image
+    if src_height < src_width:
+        new_watermark_height = src_height/6
+        new_watermark_width = int(new_watermark_height * aspect_ratio)
+        watermark_image = watermark_image.resize((new_watermark_width, new_watermark_height))
+    else:
+        new_watermark_width = src_width/3
+        new_watermark_height = int(new_watermark_width * aspect_ratio)
+        watermark_image = watermark_image.resize((new_watermark_width, new_watermark_height))
+
+    # Calculate the position for the watermark image to be centered in the source image
+    left = int((src_width - new_watermark_width) / 2)
+    top = int((src_height - new_watermark_height) / 2)
+    right = left + new_watermark_width
+    bottom = top + new_watermark_height
+
+    # Blend the source and watermark images
+    src_image = Image.blend(src_image, watermark_image, alpha=0.5)
+
+    # Save the blended image to disk with the same format as the original image
+    image_extension = os.path.splitext(src_image_path)[1]
+    src_image.save(src_image_path, image_extension)
