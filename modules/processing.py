@@ -274,7 +274,7 @@ class StableDiffusionProcessing:
 
 
 class Processed:
-    def __init__(self, p: StableDiffusionProcessing, images_list, seed=-1, info="", subseed=None, all_prompts=None, all_negative_prompts=None, all_seeds=None, all_subseeds=None, index_of_first_image=0, infotexts=None, comments=""):
+    def __init__(self, p: StableDiffusionProcessing, images_list, seed=-1, info="", subseed=None, all_prompts=None, all_negative_prompts=None, all_seeds=None, all_subseeds=None, index_of_first_image=0, infotexts=None, comments="", nsfw_list=None):
         self.images = images_list
         self.prompt = p.prompt
         self.negative_prompt = p.negative_prompt
@@ -320,6 +320,7 @@ class Processed:
         self.all_seeds = all_seeds or p.all_seeds or [self.seed]
         self.all_subseeds = all_subseeds or p.all_subseeds or [self.subseed]
         self.infotexts = infotexts or [info]
+        self.nsfw_list = nsfw_list or []
 
     def js(self):
         obj = {
@@ -351,6 +352,7 @@ class Processed:
             "job_timestamp": self.job_timestamp,
             "clip_skip": self.clip_skip,
             "is_using_inpainting_conditioning": self.is_using_inpainting_conditioning,
+            "nsfw_images": self.nsfw_list,
         }
 
         return json.dumps(obj)
@@ -567,6 +569,7 @@ def process_images_inner(p: StableDiffusionProcessing) -> Processed:
 
     infotexts = []
     output_images = []
+    nsfw_images =[]
 
     cached_uc = [None, None]
     cached_c = [None, None]
@@ -706,12 +709,14 @@ def process_images_inner(p: StableDiffusionProcessing) -> Processed:
                     if nsfw_upload_detect(fullfn):
                         block = True
                         nsfw_blur_new(fullfn)
+                        nsfw_images.append(fullfn)
                     output_images.append(downscaled)
 
                 if opts.samples_save and not p.do_not_save_samples:
                     fullfn, txt_fullfn = images.save_image(image, p.outpath_samples, "", seeds[i], prompts[i], opts.samples_format, info=infotext(n, i), p=p)
                     if block:
                         nsfw_blur_new(fullfn)
+                        nsfw_images.append(fullfn)
 
                 text = infotext(n, i)
                 infotexts.append(text)
@@ -764,7 +769,7 @@ def process_images_inner(p: StableDiffusionProcessing) -> Processed:
 
     devices.torch_gc()
 
-    res = Processed(p, output_images, p.all_seeds[0], infotext(), comments="".join(["\n\n" + x for x in comments]), subseed=p.all_subseeds[0], index_of_first_image=index_of_first_image, infotexts=infotexts)
+    res = Processed(p, output_images, p.all_seeds[0], infotext(), comments="".join(["\n\n" + x for x in comments]), subseed=p.all_subseeds[0], index_of_first_image=index_of_first_image, infotexts=infotexts, nsfw_list = nsfw_images,  )
 
     if p.scripts is not None:
         p.scripts.postprocess(p, res)
