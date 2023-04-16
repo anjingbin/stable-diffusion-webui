@@ -83,6 +83,10 @@ def nsfw_upload_detect(image_path):
     request.set_content(json.dumps({"tasks": [task], "scenes": ["porn"]}))
     response = clt.do_action_with_exception(request)
     print(response)
+
+    nsfw = True
+    porn = False
+
     result = json.loads(response)
     if 200 == result["code"]:
         taskResults = result["data"]
@@ -95,78 +99,15 @@ def nsfw_upload_detect(image_path):
                     label = sceneResult["label"]
                     print(label)
                     print(suggestion)
-                    if suggestion == "block": # and label == "porn":
-                        return True
-    return False
+                    if suggestion == "pass":
+                        nsfw = False 
+                    elif label == "porn":
+                        porn = True
+
+    return nsfw, porn 
                 
-def nsfw_detect_blur(image_path):
-    if nsfw_detect(image_path):
-        print('blur image file:', image_path)
-        src = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
-        dst = cv2.GaussianBlur(src,(51,51),50)
-       
-        #watermarking
-        if watermark is not None:
 
-            # Get the dimensions of the original image
-            h, w, _ = dst.shape
-
-            # Get the dimensions of the watermark image
-            hw, ww, _ = watermark.shape
-
-            # Calculate the center coordinates of the original image
-            center_y = int(h/2)
-            center_x = int(w/2)
-
-            # Calculate the top left corner coordinates of the watermark image
-            top_y = center_y - int(hw/2)
-            top_x = center_x - int(ww/2)
-
-            # Get the alpha channel of the watermark image
-            watermark_alpha = watermark[:,:,3]
-
-            # Create a mask of the watermark alpha channel
-            mask = cv2.merge((watermark_alpha, watermark_alpha, watermark_alpha))
-
-            # Copy the watermark image to the center of the original image using the mask
-            dst[top_y:top_y+hw, top_x:top_x+ww] = cv2.multiply(mask/255, watermark[:,:,:3]/255) * 255 + cv2.multiply(1 - mask/255, dst[top_y:top_y+hw, top_x:top_x+ww]/255) * 255
-
-        cv2.imwrite(image_path,dst)
-
-def nsfw_blur(image_path):
-    print('blur image file:', image_path)
-    src = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
-    dst = cv2.GaussianBlur(src,(51,51),50)
-    
-    #watermarking
-    if watermark is not None:
-
-        # Get the dimensions of the original image
-        h, w, _ = dst.shape
-
-        # Get the dimensions of the watermark image
-        hw, ww, _ = watermark.shape
-
-        # Calculate the center coordinates of the original image
-        center_y = int(h/2)
-        center_x = int(w/2)
-
-        # Calculate the top left corner coordinates of the watermark image
-        top_y = center_y - int(hw/2)
-        top_x = center_x - int(ww/2)
-
-        # Get the alpha channel of the watermark image
-        watermark_alpha = watermark[:,:,3]
-
-        # Create a mask of the watermark alpha channel
-        mask = cv2.merge((watermark_alpha, watermark_alpha, watermark_alpha))
-
-        # Copy the watermark image to the center of the original image using the mask
-        dst[top_y:top_y+hw, top_x:top_x+ww] = cv2.multiply(mask/255, watermark[:,:,:3]/255) * 255 + cv2.multiply(1 - mask/255, dst[top_y:top_y+hw, top_x:top_x+ww]/255) * 255
-
-    cv2.imwrite(image_path,dst)
-
-def nsfw_blur_new(src_image_path):
+def nsfw_blur(src_image_path):
     print('blur image file:', src_image_path)
     
     # Open the source and watermark images
