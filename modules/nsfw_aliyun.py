@@ -82,7 +82,7 @@ def nsfw_upload_detect(image_path):
 
     request.set_content(json.dumps({"tasks": [task], "scenes": ["porn"]}))
     response = clt.do_action_with_exception(request)
-    print(response)
+    #print(response)
 
     nsfw = True
     porn = False
@@ -97,8 +97,8 @@ def nsfw_upload_detect(image_path):
                     scene = sceneResult["scene"]
                     suggestion = sceneResult["suggestion"]
                     label = sceneResult["label"]
-                    print(label)
-                    print(suggestion)
+                    #print(label)
+                    #print(suggestion)
                     if suggestion == "pass":
                         nsfw = False 
                     elif label == "porn":
@@ -108,7 +108,7 @@ def nsfw_upload_detect(image_path):
                 
 
 def nsfw_blur(src_image_path):
-    print('blur image file:', src_image_path)
+    #print('blur image file:', src_image_path)
     
     # Open the source and watermark images
     src_image = Image.open(src_image_path)
@@ -126,12 +126,10 @@ def nsfw_blur(src_image_path):
     if src_height < src_width:
         new_watermark_height = int(src_height/6)
         new_watermark_width = int(new_watermark_height * (watermark_width/watermark_height))
-        print(new_watermark_width, new_watermark_height)
         watermark_image = watermark_image.resize((new_watermark_width, new_watermark_height))
     else:
         new_watermark_width = int(src_width/3)
         new_watermark_height = int(new_watermark_width * (watermark_height/watermark_width))
-        print(new_watermark_width, new_watermark_height)
         watermark_image = watermark_image.resize((new_watermark_width, new_watermark_height))
 
     # Calculate the position for the watermark image to be centered in the source image
