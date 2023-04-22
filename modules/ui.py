@@ -1332,7 +1332,7 @@ def create_ui():
                 with gr.Row():
                     unload_sd_model = gr.Button(value='Unload SD checkpoint to free VRAM', elem_id="sett_unload_sd_model")
                     reload_sd_model = gr.Button(value='Reload the last SD checkpoint back into VRAM', elem_id="sett_reload_sd_model")
-                    list_cached_models = gr.Button(value='List the cached models', elem_id="sett_list_cached_models")
+                    list_cached_model = gr.Button(value='List the cached models', elem_id="sett_list_cached_model")
 
             with gr.TabItem("Licenses"):
                 gr.HTML(shared.html("licenses.html"), elem_id="licenses")
@@ -1348,9 +1348,17 @@ def create_ui():
         
         def list_cached_models():
             print("listing cached models")
-            print(modules.sd_models.checkpoints_loaded)
+            #print(modules.sd_models.checkpoints_loaded)
+            print("list checkpoints_list:")
+            for key, val in modules.sd_models.checkpoints_list.items():
+                print(key, val)
+
+            print("list checkpoint_alisases:")
+            for key, val in modules.sd_models.checkpoint_alisases.items():
+                print(key)
+
             print("current shared sd model")
-            print(shared.sd_model)
+            print(shared.sd_model.sd_model_checkpoint)
 
         unload_sd_model.click(
             fn=unload_sd_weights,
@@ -1369,7 +1377,8 @@ def create_ui():
             inputs=[],
             outputs=[]
         )
-        list_cached_models.click(
+
+        list_cached_model.click(
             fn=list_cached_models,
             inputs=[],
             outputs=[]
@@ -1496,13 +1505,13 @@ def create_ui():
             queue=False,
         )
 
-        print("demo.fns")
-        for i, element in enumerate(demo.fns):
-            print("Index {}: {}".format(i, element))
+        #print("demo.fns")
+        #for i, element in enumerate(demo.fns):
+        #    print("Index {}: {}".format(i, element))
 
-        print("demo.dependencies")
-        for i, element in enumerate(demo.dependencies):
-            print("Index {}: {}".format(i, element))
+        #print("demo.dependencies")
+        #for i, element in enumerate(demo.dependencies):
+        #    print("Index {}: {}".format(i, element))
 
         def modelmerger(*args):
             try:
