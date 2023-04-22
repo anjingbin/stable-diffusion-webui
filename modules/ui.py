@@ -1332,6 +1332,7 @@ def create_ui():
                 with gr.Row():
                     unload_sd_model = gr.Button(value='Unload SD checkpoint to free VRAM', elem_id="sett_unload_sd_model")
                     reload_sd_model = gr.Button(value='Reload the last SD checkpoint back into VRAM', elem_id="sett_reload_sd_model")
+                    list_cached_models = gr.Button(value='List the cached models', elem_id="sett_list_cached_models")
 
             with gr.TabItem("Licenses"):
                 gr.HTML(shared.html("licenses.html"), elem_id="licenses")
@@ -1344,6 +1345,18 @@ def create_ui():
 
         def reload_sd_weights():
             modules.sd_models.reload_model_weights()
+        
+        def list_cached_models():
+            print("listing cached models")
+            print(modules.sd_models.checkpoints_loaded)
+            print("current shared sd model")
+            print(shared.sd_model)
+
+        unload_sd_model.click(
+            fn=unload_sd_weights,
+            inputs=[],
+            outputs=[]
+        )
 
         unload_sd_model.click(
             fn=unload_sd_weights,
@@ -1356,6 +1369,12 @@ def create_ui():
             inputs=[],
             outputs=[]
         )
+        list_cached_models.click(
+            fn=list_cached_models,
+            inputs=[],
+            outputs=[]
+        )
+
 
         request_notifications.click(
             fn=lambda: None,
