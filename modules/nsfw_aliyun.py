@@ -82,7 +82,7 @@ def nsfw_upload_detect(image_path):
 
     request.set_content(json.dumps({"tasks": [task], "scenes": ["porn"]}))
     response = clt.do_action_with_exception(request)
-    #print(response)
+    print(response)
 
     nsfw = True
     porn = False

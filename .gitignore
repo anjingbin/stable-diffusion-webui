@@ -35,3 +35,4 @@ notification.mp3
 /cache.json
 nohup.out
 *.lock
+sd-webui-controlnet
